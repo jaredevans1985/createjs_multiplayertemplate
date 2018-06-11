@@ -8,11 +8,19 @@ class GameScreen extends ScreenBase
         this.color = '#adff5b';
 
 		// Display the local score
-        this.scoreUI = ui.makeText(this, "YOUR SCORE (" + app.name + "): " + app.score, 15, 25, ui.defaultFont.font, ui.defaultFont.color, "left");
+        this.scoreUI = ui.makeText(this, "YOUR MOVES (" + app.name + "): " + app.score, 15, 25, "15px Titan One", ui.defaultFont.color, "left");
      }
 	 
 	 updatePlayerScores()
 	 {
-		this.scoreUI.text = "YOUR SCORE (" + app.name + "): " + app.score;
+		var updatedText =  "YOUR SCORE (" + app.name + "): " + app.score;
+		
+		Object.keys(app.allPlayers).forEach(function (id) {
+			if (app.allPlayers[id].info.name !== app.name) {
+				updatedText += "\n" + app.allPlayers[id].info.name + ": " + app.allPlayers[id].moves;
+			}
+		});
+		
+		this.scoreUI.text = updatedText;
 	 }
 }

@@ -108,9 +108,26 @@ var app = {
 		// SocketIO setup
 		this.socket = io();
 		this.socket.on('currentPlayers', function (players) {
-			allPlayers = players;
+			app.allPlayers = players;
 		});
-		
+		this.socket.on('newPlayer', function (players, playerInfo) {
+			app.allPlayers = players;
+			if(app.state == "gameplay")
+			{
+				app.createActor(playerInfo);
+				app.screen.updatePlayerScores();
+			}
+		});
+		this.socket.on('disconnect', function (playerName) {
+			for (var i = app.gameObjects.length - 1; i >= 0; i--)
+			{		
+				if (playerName === app.gameObjects[i].name)
+				{
+					app.gameObjects[i].kill();
+					app.gameObjects.splice(i, 1);
+				}
+			};
+		});
     },
 
     // Our game's update function, which will be run every tick at the FPS we specified
@@ -156,27 +173,6 @@ var app = {
 
             // Update the game timer and end the game if needed
             app.gameTime += dt;
-
-            // Poll the keys and move the player character accordinlgy
-            if(app.KEYCODE_LEFT.isPressed)
-            {
-                app.player.addPosition(-app.moveSpeed * dt, 0);
-            }
-
-            if(app.KEYCODE_RIGHT.isPressed)
-            {
-                app.player.addPosition(app.moveSpeed * dt, 0);
-            }
-
-            if(app.KEYCODE_UP.isPressed)
-            {
-                app.player.addPosition(0,-app.moveSpeed * dt);
-            }
-
-            if(app.KEYCODE_DOWN.isPressed)
-            {
-                app.player.addPosition(0,app.moveSpeed * dt);
-            }
 
         }
 
@@ -297,6 +293,12 @@ var app = {
     {
         // Play a sound
         audio.playSound("click");
+		
+		if(app.state == "gameplay")
+		{
+			app.player.updateTarget({ x: this.mousePos.x, y: this.mousePos.y});
+			app.addToScore(1);
+		}
     },
 
     // Change the score by the given amount
@@ -315,25 +317,25 @@ var app = {
 	// Create all of the players
 	createPlayers: function()
 	{
-		Object.keys(allPlayers).forEach(function (id) {
-			if (allPlayers[id].playerId === app.socket.id) {
-				app.addPlayer(allPlayers[id]);
+		Object.keys(app.allPlayers).forEach(function (id) {
+			if (app.allPlayers[id].playerId === app.socket.id && app.player == null) {
+				app.addPlayer(app.allPlayers[id]);
 			}
 			else{
-				app.createActor(allPlayers[id]);
+				app.createActor(app.allPlayers[id]);
 			}
 		});
 	},
 	
 	
-    // Creates a player object
+    // Creates the player object
     addPlayer: function(playerinfo)
     {
         app.player = app.createActor(playerinfo);
 		app.name = playerinfo.info.name;
     },
 	
-	// Creates a non-player object
+	// Creates an actor
 	createActor: function(playerinfo)
 	{
 		var newActor = new Actor(app.stage, playerinfo.info.name, playerinfo.info.color, playerinfo.pos.x, playerinfo.pos.y);

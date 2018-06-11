@@ -23,6 +23,12 @@ class Actor {
         // Set the position and rotation
         this._position = {x: x, y: y};
         this._rotation = rotation;
+		
+		// Movement variables
+		this.moveTime = 2;
+		this.moveTimer = this.moveTime;
+		this.moveStart = {x: x, y: y}; 
+		this.moveTarget = {x: x, y: y}; 
 
         // Set the attributes of the image
         this._image.x = this._position.x;
@@ -65,10 +71,25 @@ class Actor {
     {
         this._rotation += rotation;    // degrees
     }
+	
+	updateTarget(targetPos)
+	{
+		this.moveTarget = targetPos;
+		this.moveStart.x = this._position.x;
+		this.moveStart.y = this._position.y;
+		this.moveTimer = 0;
+	}
 
     update(dt)
     {
         // Update our position
+		if (this.moveTimer <= this.moveTime)
+		{
+			this._position.x = lerp(this.moveStart.x, this.moveTarget.x, this.moveTimer/this.moveTime);
+			this._position.y = lerp(this.moveStart.y, this.moveTarget.y, this.moveTimer/this.moveTime);
+			this.moveTimer += dt;
+		}
+		
         this._image.x = this._position.x;
         this._image.y = this._position.y;
 		this._text.x = this._position.x + 0;
@@ -79,5 +100,11 @@ class Actor {
     {
         // Any special draw code we need
     }
+	
+	kill()
+	{
+		app.stage.removeChild(this._image);
+		app.stage.removeChild(this._text);
+	}
 
 }

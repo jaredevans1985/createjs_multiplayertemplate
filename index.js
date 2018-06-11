@@ -30,12 +30,13 @@ io.on('connection', function (socket) {
 			playerId: socket.id,
 			pos: { x: Math.floor(Math.random() * 700) + 50, y: Math.floor(Math.random() * 500) + 50},
 			info: info[playerCount],
+			moves: 0,
 		};
 		playerCount++;
 		// send the players object to the new player
 		socket.emit('currentPlayers', players);
 		// update all other players of the new player
-		socket.broadcast.emit('newPlayer', players[socket.id]);
+		socket.broadcast.emit('newPlayer', players, players[socket.id]);
 		
 		console.log('a user connected and was added to the player list');
 	}
@@ -47,11 +48,13 @@ io.on('connection', function (socket) {
 	socket.on('disconnect', function () {
 		console.log('a user disconnected');
 		
+		// emit a message to all players to remove this player
+		io.emit('disconnect', players[socket.id].info.name);
+		
 		// remove this player from our players object
 		delete players[socket.id];
 		playerCount--;
-		// emit a message to all players to remove this player
-		io.emit('disconnect', socket.id);
+
 	});
 });
 
