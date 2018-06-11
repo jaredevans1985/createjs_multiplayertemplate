@@ -1,0 +1,20 @@
+﻿{
+
+	"images": [
+		"../media/images/pigsheet.png"
+	],
+
+	"framerate": 4,
+
+	"frames": [
+		[0,0,256,256,0,128,128],
+		[256,0,256,256,0,128,128],
+		[0,256,256,256,0,128,128]
+	],
+
+	"animations": {
+		"idle": { "frames": [0] },
+		"walk": { "frames": [1, 2] }
+	}
+
+}
