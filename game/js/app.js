@@ -25,6 +25,7 @@ var app = {
     // Asset management
     gameObjects: [],
     player: null,
+	name: "none",
 
     // Game state
     //  - loading
@@ -35,8 +36,8 @@ var app = {
     gamestate: "loading",
 
 	// multiplayer user management
-	name: "none",
-	playerList: [],
+	socket: null,
+	allPlayers: {},
 	
     // Track the particle emitters
     // We'll update this in update
@@ -103,7 +104,13 @@ var app = {
 
         // Create the first screen
         this.gotoScreen("loading");
-
+		
+		// SocketIO setup
+		this.socket = io();
+		this.socket.on('currentPlayers', function (players) {
+			allPlayers = players;
+		});
+		
     },
 
     // Our game's update function, which will be run every tick at the FPS we specified
@@ -239,6 +246,7 @@ var app = {
 				this.screen = new GameScreen();
 				this.state = "gameplay";
 				this.createPlayers();
+				this.screen.updatePlayerScores();
 				break;
 
             case "gameover":
@@ -303,22 +311,35 @@ var app = {
         app.score = 0;
         app.gameTime = 0;
     },
-
-	// Create a player object for each player
+	
+	// Create all of the players
 	createPlayers: function()
 	{
-		// after we get a list of player from the socket, loop through all of them and create them
-		var colvar = new RGBA(255, 0, 0, 255);
-		console.log(colvar);
-		app.createPlayer(colvar, {x:app.SCREEN_WIDTH/2, y:app.SCREEN_HEIGHT/2});
+		Object.keys(allPlayers).forEach(function (id) {
+			if (allPlayers[id].playerId === app.socket.id) {
+				app.addPlayer(allPlayers[id]);
+			}
+			else{
+				app.createActor(allPlayers[id]);
+			}
+		});
 	},
 	
+	
     // Creates a player object
-    createPlayer: function(color, pos)
+    addPlayer: function(playerinfo)
     {
-        app.player = new Actor(app.stage, app.name, color, app.SCREEN_WIDTH / 2, app.SCREEN_HEIGHT /2);
-        app.gameObjects.push(app.player);
-    }
+        app.player = app.createActor(playerinfo);
+		app.name = playerinfo.info.name;
+    },
+	
+	// Creates a non-player object
+	createActor: function(playerinfo)
+	{
+		var newActor = new Actor(app.stage, playerinfo.info.name, playerinfo.info.color, playerinfo.pos.x, playerinfo.pos.y);
+		app.gameObjects.push(newActor);
+		return newActor;
+	}
 
 }
     

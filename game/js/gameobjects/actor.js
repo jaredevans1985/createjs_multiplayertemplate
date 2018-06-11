@@ -3,7 +3,7 @@ class Actor {
     {
         // create and parent the shape
         this._image = new createjs.Shape();
-		this._image.graphics.beginFill(color.str());
+		this._image.graphics.beginFill(color);
 		this._image.graphics.drawRect(0, 0, 30, 30);
         actorParent.addChild(this._image);
 		this._image.regX = 15;

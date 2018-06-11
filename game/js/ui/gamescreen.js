@@ -7,7 +7,12 @@ class GameScreen extends ScreenBase
         // Change the background color
         this.color = '#adff5b';
 
-        // Make a ui entry to track the number of clicks
-        this.scoreUI = ui.makeText(this, "SCORE: " + app.score, 15, 25, ui.defaultFont.font, ui.defaultFont.color, "left");
+		// Display the local score
+        this.scoreUI = ui.makeText(this, "YOUR SCORE (" + app.name + "): " + app.score, 15, 25, ui.defaultFont.font, ui.defaultFont.color, "left");
      }
+	 
+	 updatePlayerScores()
+	 {
+		this.scoreUI.text = "YOUR SCORE (" + app.name + "): " + app.score;
+	 }
 }
