@@ -28,7 +28,8 @@ class Actor {
 		this.moveTime = 2;
 		this.moveTimer = this.moveTime;
 		this.moveStart = {x: x, y: y}; 
-		this.moveTarget = {x: x, y: y}; 
+		this.moveTarget = {x: x, y: y};
+		this._moveCount = 0;
 
         // Set the attributes of the image
         this._image.x = this._position.x;
@@ -43,6 +44,9 @@ class Actor {
 
     get name() { return this._name; }
     set name(n) { this._name = n; }
+	
+	get moveCount() { return this._moveCount; }
+    set moveCount(n) { this._moveCount = n; }
 
     get position() { return this._position; }
     set position(p) { this._position = p; }

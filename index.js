@@ -56,6 +56,14 @@ io.on('connection', function (socket) {
 		playerCount--;
 
 	});
+	
+	// when a player moves, update the player data
+	socket.on('playerMovement', function (movementData) {
+		players[socket.id].pos = movementData;
+		players[socket.id].moves++;
+		// emit a message to all players about the player that moved
+		socket.broadcast.emit('playerMoved', players[socket.id]);
+	});
 });
 
 http.listen(3000, function() {

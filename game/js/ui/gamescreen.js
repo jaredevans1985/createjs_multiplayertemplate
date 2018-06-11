@@ -15,11 +15,12 @@ class GameScreen extends ScreenBase
 	 {
 		var updatedText =  "YOUR SCORE (" + app.name + "): " + app.score;
 		
-		Object.keys(app.allPlayers).forEach(function (id) {
-			if (app.allPlayers[id].info.name !== app.name) {
-				updatedText += "\n" + app.allPlayers[id].info.name + ": " + app.allPlayers[id].moves;
+		for(var i = 0; i < app.gameObjects.length; i++)
+		{
+			if (app.name !== app.gameObjects[i].name) {
+				updatedText += "\n" + app.gameObjects[i].name + ": " + app.gameObjects[i].moveCount;
 			}
-		});
+		}
 		
 		this.scoreUI.text = updatedText;
 	 }

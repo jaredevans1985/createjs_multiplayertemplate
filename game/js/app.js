@@ -127,6 +127,24 @@ var app = {
 					app.gameObjects.splice(i, 1);
 				}
 			};
+			
+			if(app.state == "gameplay")
+			{
+				app.screen.updatePlayerScores();
+			}
+		});
+		this.socket.on('playerMoved', function (playerInfo) {
+			if(app.state == "gameplay")
+			{
+				for(var i = 0; i < app.gameObjects.length; i++)
+				{
+					if (playerInfo.info.name === app.gameObjects[i].name) {
+						app.gameObjects[i].updateTarget(playerInfo.pos);
+						app.gameObjects[i].moveCount = playerInfo.moves;
+						app.screen.updatePlayerScores();
+					}
+				}
+			}
 		});
     },
 
@@ -297,7 +315,10 @@ var app = {
 		if(app.state == "gameplay")
 		{
 			app.player.updateTarget({ x: this.mousePos.x, y: this.mousePos.y});
+			// emit an event to the socket
+			this.socket.emit('playerMovement', { x: this.mousePos.x, y: this.mousePos.y });
 			app.addToScore(1);
+			app.screen.updatePlayerScores();
 		}
     },
 
@@ -339,6 +360,7 @@ var app = {
 	createActor: function(playerinfo)
 	{
 		var newActor = new Actor(app.stage, playerinfo.info.name, playerinfo.info.color, playerinfo.pos.x, playerinfo.pos.y);
+		newActor.moveCount = playerinfo.moves;
 		app.gameObjects.push(newActor);
 		return newActor;
 	}
