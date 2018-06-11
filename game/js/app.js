@@ -34,6 +34,10 @@ var app = {
     //  - help
     gamestate: "loading",
 
+	// multiplayer user management
+	name: "none",
+	playerList: [],
+	
     // Track the particle emitters
     // We'll update this in update
     // Note that since our particles are createjs objects, createjs will do the drawing for us
@@ -146,51 +150,25 @@ var app = {
             // Update the game timer and end the game if needed
             app.gameTime += dt;
 
-            app.screen.timerUI.text = "TIME LEFT: " + (((app.maxGameTime - app.gameTime) | 0) + 1);
-
-            if(app.gameTime >= app.maxGameTime)
-            {
-                app.gotoScreen("gameover");
-            }
-
-            // Update the mouse pos display
-            app.screen.mouseUI.text = "MOUSE POS: ( " + app.mousePos.x + ", " + app.mousePos.y + ")";
-
             // Poll the keys and move the player character accordinlgy
             if(app.KEYCODE_LEFT.isPressed)
             {
-                app.player.addRotation(-app.rotSpeed * dt); 
+                app.player.addPosition(-app.moveSpeed * dt, 0);
             }
 
             if(app.KEYCODE_RIGHT.isPressed)
             {
-                app.player.addRotation(app.rotSpeed * dt);
+                app.player.addPosition(app.moveSpeed * dt, 0);
             }
 
             if(app.KEYCODE_UP.isPressed)
             {
-                var posX = app.moveSpeed * dt * math.cos(app.player.getRotationRadians());
-                var posY = app.moveSpeed * dt * math.sin(app.player.getRotationRadians());
-                app.player.addPosition(posX,posY);
-
-                hasMoved = true;
+                app.player.addPosition(0,-app.moveSpeed * dt);
             }
 
             if(app.KEYCODE_DOWN.isPressed)
             {
-                var posX = app.moveSpeed * dt * math.cos(app.player.getRotationRadians());
-                var posY = app.moveSpeed * dt * math.sin(app.player.getRotationRadians());
-                app.player.addPosition(-posX,-posY);
-                hasMoved = true;
-            }
-
-            // Start and stop the walking animation as needed
-            if (hasMoved)
-            {
-                app.player.playAnimation("walk");
-            }
-            else{
-                app.player.playAnimation("idle");
+                app.player.addPosition(0,app.moveSpeed * dt);
             }
 
         }
@@ -234,45 +212,45 @@ var app = {
         switch(screenType)
         {
             case "loading":
-            effects.clearAllParticles();
-            this.screen.removeAllChildren();
-            this.screen = new LoadingScreen();
-            this.state = "loading";
-            break;
+				effects.clearAllParticles();
+				this.screen.removeAllChildren();
+				this.screen = new LoadingScreen();
+				this.state = "loading";
+				break;
 
             case "mainmenu":
-            effects.clearAllParticles();
-            this.screen.removeAllChildren();
-            this.screen = new MainMenu();
-            this.state = "mainmenu";
-            break;
+				effects.clearAllParticles();
+				this.screen.removeAllChildren();
+				this.screen = new MainMenu();
+				this.state = "mainmenu";
+				break;
 
             case "help":
-            effects.clearAllParticles();
-            this.screen.removeAllChildren();
-            this.screen = new HelpScreen();
-            this.state = "help";
-            break;
+				effects.clearAllParticles();
+				this.screen.removeAllChildren();
+				this.screen = new HelpScreen();
+				this.state = "help";
+				break;
 
             case "gameplay":
-            effects.clearAllParticles();
-            this.screen.removeAllChildren();
-            this.resetGame(); 
-            this.screen = new GameScreen();
-            this.state = "gameplay";
-            this.createPlayer();
-            break;
+				effects.clearAllParticles();
+				this.screen.removeAllChildren();
+				this.resetGame(); 
+				this.screen = new GameScreen();
+				this.state = "gameplay";
+				this.createPlayers();
+				break;
 
             case "gameover":
-            effects.clearAllParticles();
-            this.screen.removeAllChildren();
-            this.screen = new EndScreen();
-            this.state = "gameover";
-            break;
+				effects.clearAllParticles();
+				this.screen.removeAllChildren();
+				this.screen = new EndScreen();
+				this.state = "gameover";
+				break;
 
             default:
-            console.log("ERROR: Cannot swap screen, invalid ID");
-            break;
+				console.log("ERROR: Cannot swap screen, invalid ID");
+				break;
         }
     },
 
@@ -311,17 +289,6 @@ var app = {
     {
         // Play a sound
         audio.playSound("click");
-
-        // Create a burst effect
-        //effects.basicBurst(this.mousePos);
-
-        // If we're in the game, track the number of clicks
-        if(app.state == "gameplay")
-        {
-            app.addToScore(app.pointsPerClick);
-
-            app.screen.scoreUI.text = "SCORE: " + app.score;
-        }
     },
 
     // Change the score by the given amount
@@ -337,13 +304,20 @@ var app = {
         app.gameTime = 0;
     },
 
-    // Creates the player object
-    createPlayer: function()
+	// Create a player object for each player
+	createPlayers: function()
+	{
+		// after we get a list of player from the socket, loop through all of them and create them
+		var colvar = new RGBA(255, 0, 0, 255);
+		console.log(colvar);
+		app.createPlayer(colvar, {x:app.SCREEN_WIDTH/2, y:app.SCREEN_HEIGHT/2});
+	},
+	
+    // Creates a player object
+    createPlayer: function(color, pos)
     {
-        app.player = new Actor(app.stage, "sprite", "pig", "player", app.SCREEN_WIDTH / 2, app.SCREEN_HEIGHT /2, 0.5, 0.5);
-        app.player.playAnimation("idle", true);
+        app.player = new Actor(app.stage, app.name, color, app.SCREEN_WIDTH / 2, app.SCREEN_HEIGHT /2);
         app.gameObjects.push(app.player);
-        //effects.basicImageParticleStream(app.player.position);
     }
 
 }

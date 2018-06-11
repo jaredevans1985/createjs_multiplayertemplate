@@ -5,7 +5,7 @@ class MainMenu extends ScreenBase
         super();
 
         // Make a title
-        ui.makeText(this, "MY GAME NAME", app.SCREEN_WIDTH / 2, 100, ui.titleFont.font, ui.titleFont.color);
+        ui.makeText(this, "MULTI-BOX", app.SCREEN_WIDTH / 2, 100, ui.titleFont.font, ui.titleFont.color);
 
         // Make a play button
         var textInfo = { text: "PLAY" };
@@ -22,7 +22,7 @@ class MainMenu extends ScreenBase
         }
 
         // Make a set of sound toggles
-        ui.makeSoundButtons(this);
+        //ui.makeSoundButtons(this);
      }
 }
 

@@ -1,17 +1,21 @@
 class Actor {
-    constructor(parent, type, imageID, name = "actor", x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0)
+    constructor(actorParent, name = "actor", color, x = 0, y = 0, scaleX = 1, scaleY = 1, rotation = 0)
     {
-        // create and parent the image
-        
-        if(type == "bitmap")
-        {
-            this._image = new createjs.Bitmap(assets.getResult(imageID));
-        }
-        else if (type == "sprite")
-        {
-            this._image = new createjs.Sprite(assets.getResult(imageID));
-        }
-        parent.addChild(this._image);
+        // create and parent the shape
+        this._image = new createjs.Shape();
+		this._image.graphics.beginFill(color.str());
+		this._image.graphics.drawRect(0, 0, 30, 30);
+        actorParent.addChild(this._image);
+		this._image.regX = 15;
+		this._image.regY = 15;
+		
+		// create and parent the text
+		this._text = new createjs.Text(name, "14px Titan One", '#000000');
+		this._text.x = 0; //positions the text
+        this._text.y = 0;
+        this._text.textAlign = "center";
+        this._text.textBaseline = "middle";
+        actorParent.addChild(this._text);  //adds the text object to the stage
 
         // Set the name
         this._name = name;
@@ -20,19 +24,12 @@ class Actor {
         this._position = {x: x, y: y};
         this._rotation = rotation;
 
-        // Set the atributes of the image
+        // Set the attributes of the image
         this._image.x = this._position.x;
         this._image.y = this._position.y;
         this._image.scaleX = scaleX;
         this._image.scaleY = scaleY;
         this._image.rotation = this._rotation;    // degrees
-
-        // Set a central reg x point (only need to do this for bitmaps)
-        if(type == "bitmap")
-        {
-            this._image.regX = this._image.getBounds().width/2;
-            this._image.regY = this._image.getBounds().height/2;
-        }
     }
 
     get image() { return this._image; }
@@ -69,28 +66,13 @@ class Actor {
         this._rotation += rotation;    // degrees
     }
 
-    playAnimation(animID, gotoAndStop = false)
-    {
-        if(gotoAndStop)
-        {
-            this._image.gotoAndStop(animID);
-        }
-        else
-        {
-            // Only play if we aren't already playing
-            if(this._image.currentAnimation != animID)
-            {
-                this._image.gotoAndPlay(animID);
-            }
-        }        
-    }
-
     update(dt)
     {
-        // Update our position and rotation
+        // Update our position
         this._image.x = this._position.x;
         this._image.y = this._position.y;
-        this._image.rotation = this._rotation;
+		this._text.x = this._position.x + 0;
+        this._text.y = this._position.y + 25;
     }
 
     draw(dt)

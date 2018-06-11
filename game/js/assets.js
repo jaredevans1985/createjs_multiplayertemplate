@@ -63,7 +63,7 @@ var assets = {
         app.gotoScreen("mainmenu");
 
         // Start the music
-        audio.toggleMusic(true);
+        //audio.toggleMusic(true);
     },
 
     // When an individual file is loaded, call this function
