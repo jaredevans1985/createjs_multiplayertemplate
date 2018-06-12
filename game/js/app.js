@@ -146,6 +146,9 @@ var app = {
 				}
 			}
 		});
+		
+		// doing some cookie testing
+		checkCookie();
     },
 
     // Our game's update function, which will be run every tick at the FPS we specified

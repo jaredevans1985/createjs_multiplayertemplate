@@ -4,7 +4,6 @@ var http = require('http').Server(expressApp);
 var io = require('socket.io').listen(http);
 var PORT = process.env.PORT || 5000;
 
-console.log(PORT);
 var players = {};
 var playerCount = 0;
 var info = 
