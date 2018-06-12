@@ -2,7 +2,9 @@ var express = require('express');
 var expressApp = express();
 var http = require('http').Server(expressApp);
 var io = require('socket.io').listen(http);
+var PORT = process.env.PORT || 5000;
 
+console.log(PORT);
 var players = {};
 var playerCount = 0;
 var info = 
@@ -66,6 +68,6 @@ io.on('connection', function (socket) {
 	});
 });
 
-http.listen(3000, function() {
-	console.log('listening on localhost:3000');
+http.listen(PORT, function() {
+	console.log('listening on localhost:5000');
 });
